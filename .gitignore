@@ -1,0 +1,9 @@
+# Each node's fetched prompt.md + build land here as untrusted data — never committed.
+/workspace/
+# Generated disposable build containers (see /sandbox-node) — never committed.
+/sandbox/
+
+.DS_Store
+*.log
+__pycache__/
+.env
