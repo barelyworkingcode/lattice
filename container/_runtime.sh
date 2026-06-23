@@ -9,9 +9,12 @@ REPO="$(cd "$HERE/.." && pwd)"
 
 IMAGE="${LATTICE_IMAGE:-lattice-control:latest}"
 NAME="${LATTICE_CONTAINER:-lattice}"
-# Persistent home (Claude + gh + git auth) — bind-mounted at /root inside.
+# Non-root user inside the container (UID 1000). Required so Claude Code will
+# accept `--dangerously-skip-permissions` — it refuses to run as root.
+GUEST_USER="${LATTICE_GUEST_USER:-node}"
+# Persistent home (Claude + gh + git auth) — bind-mounted at /home/node inside.
 HOME_DIR="${LATTICE_HOME_DIR:-$HOME/.lattice-container/home}"
-GUEST_HOME="/root"
+GUEST_HOME="/home/node"
 
 # --- runtime detection ------------------------------------------------------
 RUNTIME="${LATTICE_CONTAINER_RUNTIME:-}"
@@ -74,13 +77,13 @@ rt_create() {              # create + start the permanent container
   mkdir -p "$HOME_DIR"
   if [ "$KIND" = apple ]; then
     # Apple container has no restart policy; start.sh/enter.sh start on demand.
-    "$RUNTIME" run -d --name "$NAME" \
+    "$RUNTIME" run -d --name "$NAME" --user "$GUEST_USER" \
       -v "$HOME_DIR:$GUEST_HOME" \
       -v "$REPO:/lattice" \
       -w /lattice \
       "$IMAGE" sleep infinity >/dev/null
   else
-    "$RUNTIME" run -d --name "$NAME" --restart unless-stopped \
+    "$RUNTIME" run -d --name "$NAME" --restart unless-stopped --user "$GUEST_USER" \
       -v "$HOME_DIR:$GUEST_HOME" \
       -v "$REPO:/lattice" \
       -w /lattice \
@@ -92,7 +95,7 @@ rt_start() { "$RUNTIME" start "$NAME" >/dev/null; }
 
 rt_exec() {                # interactive: rt_exec [cmd...]  (default: login shell)
   if [ "$#" -gt 0 ]; then
-    exec "$RUNTIME" exec -it -w /lattice -e HOME="$GUEST_HOME" "$NAME" "$@"
+    exec "$RUNTIME" exec -it --user "$GUEST_USER" -w /lattice -e HOME="$GUEST_HOME" "$NAME" "$@"
   fi
-  exec "$RUNTIME" exec -it -w /lattice -e HOME="$GUEST_HOME" "$NAME" bash -l
+  exec "$RUNTIME" exec -it --user "$GUEST_USER" -w /lattice -e HOME="$GUEST_HOME" "$NAME" bash -l
 }
