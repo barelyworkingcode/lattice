@@ -80,7 +80,7 @@ Docker, or Podman). Non-negotiables:
 - **One-file ingest.** Fetch only `prompt.md`, via the API. Never clone a node, never run its code —
   its hooks, scripts, `.claude/`, `CLAUDE.md` never reach you because you never fetch them.
 - **Launder before you build.** `/inspect-node` runs a deterministic scan, then hands the raw prompt
-  to a **no-tools classifier subagent** that reads it and returns a one-line vetted spec. The agent
+  to a **read-only classifier subagent** (tool list `Read` alone) that reads it and returns a one-line vetted spec. The agent
   that can act never ingests the raw text, so an adversarial prompt can't steer it. The build works
   from the spec, never the raw prompt.
 - **The gate is a backstop, not a wall.** `/pick-node` evaluates on fetch and writes a verdict; a

@@ -35,10 +35,11 @@ The fork stays bare — a node is content, not a program — so it carries **no 
 
 4. Optionally reset `$node/CONTRIBUTORS.md` to just yourself as the seeder.
 
-5. Commit and push (stamp the seed with the `Made-With` trailer):
+5. Commit and push (stamp the seed with the `Made-With` trailer, naming the agent and the model
+   you are actually running as):
    ```bash
    git -C "$node" add prompt.md CONTRIBUTORS.md
-   git -C "$node" commit -m "lattice: seed node — <your ask in a few words>" -m "Made-With: Claude Code (Opus 4.8)"
+   git -C "$node" commit -m "lattice: seed node — <your ask in a few words>" -m "Made-With: <Agent> (<Model Version>)"
    git -C "$node" push
    ```
 

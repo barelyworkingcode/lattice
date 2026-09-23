@@ -37,12 +37,14 @@ dir, e.g. `workspace/<repo>`.
    gh api -X POST "repos/$fork/git/refs" -f ref="refs/heads/lattice/$slug" -f sha="$base" >/dev/null
    ```
 
-4. Write each built file to the branch with the Contents API (one commit each, no working tree):
+4. Write each built file to the branch with the Contents API (one commit each, no working tree).
+   Set `made_with` to the agent and the model you are actually running as:
    ```bash
+   made_with="<Agent> (<Model Version>)"
    for path in $files; do
      b64=$(base64 < "$dir/$path" | tr -d '\n')
      gh api -X PUT "repos/$fork/contents/$path" \
-       -f message="$(printf 'lattice: add %s\n\nMade-With: Claude Code (Opus 4.8)' "$path")" \
+       -f message="$(printf 'lattice: add %s\n\nMade-With: %s' "$path" "$made_with")" \
        -f content="$b64" -f branch="lattice/$slug" >/dev/null
    done
    ```
@@ -51,7 +53,7 @@ dir, e.g. `workspace/<repo>`.
    ```bash
    gh pr create --repo "$target" --head "$me:lattice/$slug" \
      --title "lattice: <what you built>" \
-     --body "$(printf 'Answers this node'\''s prompt:\n\n> <quote the spec you built>\n\nAdded <one sentence>. Run: `<command>`.\n\nMade with: Claude Code (Opus 4.8)\n')"
+     --body "$(printf 'Answers this node'\''s prompt:\n\n> <quote the spec you built>\n\nAdded <one sentence>. Run: `<command>`.\n\nMade with: %s\n' "$made_with")"
    ```
 
 6. Print the PR URL. Merging is the node owner's call — never self-merge into someone else's node.

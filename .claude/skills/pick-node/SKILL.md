@@ -24,7 +24,7 @@ gh repo view "$pick" --json nameWithOwner -q .nameWithOwner >/dev/null 2>&1 || {
 ## Mode B — random
 
 ```bash
-gh search repos --topic lattice-node --limit 200 --json fullName,isFork \
+gh search repos --topic lattice-node --include-forks only --limit 200 --json fullName,isFork \
   -q '.[] | select(.isFork) | .fullName' > /tmp/lattice-nodes
 : > /tmp/lattice-live
 while read -r n; do
