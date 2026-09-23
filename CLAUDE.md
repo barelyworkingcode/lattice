@@ -108,6 +108,9 @@ Docker, or Podman). Non-negotiables:
 
 ## Conventions
 
+These conventions apply to **node contributions** (PRs into other people's nodes). Changes to this
+control repo itself follow the standard flow: one issue, review gate, branch, PR.
+
 - **Node name:** anything unique and descriptive — name a node for its prompt (e.g. `arcade`).
   Naming is cosmetic; lineage is the fork's parent, membership is the topic. A `lattice-` prefix is
   optional. One owner can't have two repos of the same name, so give each node its own.
